@@ -1,0 +1,21 @@
+# Ignore build directories
+build/
+cmake-build-*
+
+# Ignore CMake cache files
+CMakeCache.txt
+CMakeFiles/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Ignore Qt-specific generated files (if using Qt)
+*.pro.user
+*.qrc
+*.ui
+
+# Ignore system files
+.DS_Store
+Thumbs.db
