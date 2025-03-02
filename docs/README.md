@@ -7,88 +7,94 @@ Imagine you are a student who loves to take notes on pen and paper instead of vi
 * Similarly, taking photos of the pages and compiling them into an album will take more space than a normal text file. In the long run, storage might be an issue.
 * The final option is to digitize the text from paper to a virtual document by manually typing everything out. That might take a long time, and it is almost like doing double the work.
 
-To solve this problem, I want to create a C++ library, that people can import and use to transcribe words from speech (audio) to text in real time. There might be speech-to-text engines existing but according to my limited knowledge, they do not tend to possess the ability to do a few things like making the text **bold** or _italics_, or scientific notations like subscripts, superscripts, summations(∑), etc. in their texts. I want to build a library that can take care of all these capabilities and be usable software for people.
+To solve this problem, I want to create a C++ library, that people can import and use to transcribe words from speech (audio) to text in real time. There might be speech-to-text engines existing but according to my limited knowledge, they do not tend to possess the ability to do a few things like making the text **bold** or _italics_, or scientific notations like subscripts, superscripts, etc. in their texts. I want to build a library that can take care of all these capabilities and be usable software for people.
 
-## Prerequisites to contribute
+**Notes:**
+- The Whisper model is stored in `external/whisper.cpp/models/ggml-base.en.bin`.
+- When running from the build directory, relative paths in the code assume that the project root is one level up (e.g., model path `"../external/whisper.cpp/models/ggml-base.en.bin"`).
 
-Please make sure the following dependencies are installed in your system:
-* **CMake**: Available on all platforms.
-  * _macOS_: ```brew install cmake```
-  * _Linux_: ```sudo apt install cmake```
-  * _Windows_: Download the installer from the official [CMake website](https://cmake.org/download/).
-* A compatible **compiler**:
-  * _macOS_: Clang (comes with Xcode Command Line Tools).
-  * _Linux_: GCC or Clang.
-  * _Windows_: MSVC (part of Visual Studio) or MinGW/GCC.
-* **Dependencies**: This project is dependent on:
-  * **Qt**:
-    * _macOS_: 
-      * ```brew install qt```
-      * Add Qt's bin directory to your PATH (usually, it’s /usr/local/opt/qt/bin): ```bash 
-      export PATH="/usr/local/opt/qt/bin:$PATH"```
-    * _Linux_: ```sudo apt install qt5-qmake qtbase5-dev```
-    * _Windows_: Download the Qt Online Installer from the official [Qt website](https://www.qt.io/download).
-  * **GoogleTest**:
-      * _macOS_:
-        * ```brew install googletest```
-        * Manually building: 
-          ``` bash
-          git clone https://github.com/google/googletest.git
-          cd googletest
-          mkdir build
-          cd build cmake ..
-          make
-          sudo make install
-          ```
-      * _Linux_: 
-        * ```sudo apt install libgtest-dev```
-        * Compile it separately using:
-          ``` bash
-          cd /usr/src/gtest
-          sudo cmake CMakeLists.txt
-          sudo make
-          sudo mv libgtest* /usr/lib
-          ```
-      * _Windows_: Download the latest release of Google Test from the [GitHub repository](https://github.com/google/googletest).
-  * **Doxygen**:
-      * _macOS_: ```brew install doxygen```
-      * _Linux_: ```sudo apt install doxygen```
-      * _Windows_: Download the Doxygen installer from the official [Doxygen website](https://www.doxygen.nl/download.html).
+## Prerequisites
 
-## Build the project
+Before building VoxFormat, please ensure the following dependencies are installed:
 
-* Clone this repository.
-* Open a terminal or IDE with CMake support (e.g. CLion).
-* Do OS-Specific Adjustments:
-  * _macOS_:
-      * (Optional unless errors crop up) Ensure the correct SDK is specified in CMakeLists.txt: \
-        ```set(CMAKE_OSX_SYSROOT "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")```
-  * _Linux_:
-      * Install GCC/Clang and any required libraries: \
-        ```sudo apt install build-essential cmake```
-      * No need for CMAKE_OSX_SYSROOT—Linux usually auto-detects paths.
-  * Windows:
-      * Use Visual Studio:
-          * Open the CMakeLists.txt file directly in Visual Studio.
-      * Or use MinGW/GCC with:
-        ``` bash
-        cmake -G "MinGW Makefiles" ..
-        cmake --build .
-        ```
-* Run these commands to create a build directory: 
-    ```bash
-    mkdir build
-    cd build
-  ```
-* Run CMake:
-    ```bash
-    cmake ..
-    cmake --build .
-    ```
-* Run the executable:
-    ```bash
-    ./MyProject   # On Linux/macOS
-    MyProject.exe # On Windows
-    ```
+- **CMake**  
+  - _macOS_: `brew install cmake`
+  - _Linux_: `sudo apt install cmake`
+  - _Windows_: Download from [CMake's website](https://cmake.org/download/).
 
-    
+- **Compiler**  
+  - _macOS_: Clang (included with Xcode Command Line Tools)
+  - _Linux_: GCC or Clang
+  - _Windows_: MSVC (Visual Studio) or MinGW/GCC
+
+- **Qt** (for GUI components)  
+  - _macOS_: `brew install qt` and add Qt's bin directory (e.g., `/usr/local/opt/qt/bin`) to your PATH.
+  - _Linux_: `sudo apt install qt5-qmake qtbase5-dev`
+  - _Windows_: Download from [Qt's website](https://www.qt.io/download/).
+
+## Initial Setup
+
+To make VoxFormat plug-and-play, a `setup.sh` script is provided that automates the following steps:
+
+- Cloning and updating the Whisper.cpp repository.
+- Building Whisper.cpp.
+- Downloading the Whisper model from Hugging Face.
+
+### Using the Setup Script
+
+1. **Make the Script Executable**  
+   From the project root, run:
+   ```bash
+   chmod +x setup.sh
+   ```
+
+2. **Run the Script**  
+   ```bash
+   ./setup.sh
+   ```
+   This script will:
+   - Check if `external/whisper.cpp` exists; if not, it will clone it.
+   - Update submodules for Whisper.cpp.
+   - Build Whisper.cpp.
+   - Download the base English model (`ggml-base.en.bin`) into `external/whisper.cpp/models/`.
+
+## Building VoxFormat
+
+After running the setup script, proceed with building VoxFormat:
+
+1. **Clean and Create a Build Directory, Then Build**  
+   ```bash
+   cd /Users/sprihamandal/Desktop/voxformat/VoxFormat
+   rm -rf build
+   mkdir build && cd build
+   cmake ..
+   make -j$(sysctl -n hw.ncpu)
+   cd ..
+   ```
+   *(The final `cd ..` takes you back to the project root.)*
+
+2. **Run the Executable**  
+   ```bash
+   cd build
+   ./voxformat
+   cd ..
+   ```
+
+## Usage
+
+- **Model Loading**  
+  VoxFormat loads the Whisper model from `../external/whisper.cpp/models/ggml-base.en.bin` relative to the build directory.
+
+- **Audio Transcription**  
+  The `SpeechProcessor` class in `src/transcription/` loads the model and transcribes audio data provided (e.g., from a WAV file loaded via `loadWav()`).
+
+- **WAV File Loading**  
+  Place your sample WAV files in the `sample_audio/` directory. The example in `main.cpp` loads a file called `samplespeech.wav` from this folder.
+
+## Contributing
+
+Contributions are welcome! To contribute:
+1. Fork this repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Submit a pull request.
