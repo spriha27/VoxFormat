@@ -1,35 +1,29 @@
 #!/bin/bash
-# setup.sh - Script to set up VoxFormat dependencies
-
-# Exit if any command fails
 set -e
 
 echo "=== Setting up VoxFormat ==="
 
-# Step 1: Ensure external/whisper.cpp is cloned
-if [ ! -d "external/whisper.cpp" ]; then
+# 1. Clone Whisper.cpp if it doesn't exist
+if [ -d "external/whisper.cpp" ]; then
+    echo "Whisper.cpp repository already exists."
+else
     echo "Cloning Whisper.cpp repository..."
-    cd external
-    git clone https://github.com/ggerganov/whisper.cpp.git
-    cd ..
+    git clone https://github.com/ggerganov/whisper.cpp.git external/whisper.cpp
 fi
 
-# Step 2: Update submodules for Whisper.cpp
-cd external/whisper.cpp
-echo "Updating submodules..."
-git submodule update --init --recursive
-
-# Step 3: Build Whisper.cpp
+# 2. Build Whisper.cpp
 echo "Building Whisper.cpp..."
+cd external/whisper.cpp || { echo "Cannot cd to external/whisper.cpp"; exit 1; }
 rm -rf build
 mkdir build && cd build
 cmake ..
 make -j$(sysctl -n hw.ncpu)
+cd ../../..
+
+# 3. Download the Whisper model
+echo "Downloading ggml-base.en.bin model..."
+cd external/whisper.cpp || exit 1
+./models/download-ggml-model.sh base.en
 cd ..
 
-# Step 4: Download the base model
-echo "Downloading ggml-base.en.bin model..."
-./models/download-ggml-model.sh base.en
-
-cd ../..
-echo "Setup complete! You can now build VoxFormat."
+echo "Setup complete! You can now build VoxFormat with cmake in the project root."
