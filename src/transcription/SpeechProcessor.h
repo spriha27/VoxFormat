@@ -1,8 +1,21 @@
-//
-// Created by SPRIHA MANDAL on 29/12/24.
-//
+#ifndef SPEECH_PROCESSOR_H
+#define SPEECH_PROCESSOR_H
 
-#ifndef SPEECHPROCESSOR_H
-#define SPEECHPROCESSOR_H
+#include <string>
+#include <vector>
+#include "whisper.h"
 
-#endif //SPEECHPROCESSOR_H
+class SpeechProcessor {
+public:
+    explicit SpeechProcessor(const std::string &modelPath);
+    ~SpeechProcessor();
+
+    bool loadModel();
+    std::string transcribeAudio(const std::vector<float>& audioData, int sampleRate);
+
+private:
+    std::string modelPath;
+    struct whisper_context* whisperContext;
+};
+
+#endif

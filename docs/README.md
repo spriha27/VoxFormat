@@ -61,7 +61,7 @@ Please make sure the following dependencies are installed in your system:
 * Open a terminal or IDE with CMake support (e.g. CLion).
 * Do OS-Specific Adjustments:
   * _macOS_:
-      * Ensure the correct SDK is specified in CMakeLists.txt: \
+      * (Optional unless errors crop up) Ensure the correct SDK is specified in CMakeLists.txt: \
         ```set(CMAKE_OSX_SYSROOT "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")```
   * _Linux_:
       * Install GCC/Clang and any required libraries: \
