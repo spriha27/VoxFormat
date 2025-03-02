@@ -5,11 +5,10 @@ echo "=== Setting up VoxFormat ==="
 
 # 1. Clone Whisper.cpp if it doesn't exist
 if [ -d "external/whisper.cpp" ]; then
-    echo "Whisper.cpp repository already exists."
-else
-    echo "Cloning Whisper.cpp repository..."
-    git clone https://github.com/ggerganov/whisper.cpp.git external/whisper.cpp
+    rm -rf external/whisper.cpp
 fi
+echo "Cloning Whisper.cpp repository..."
+git clone https://github.com/ggerganov/whisper.cpp.git external/whisper.cpp
 
 # 2. Build Whisper.cpp
 echo "Building Whisper.cpp..."
